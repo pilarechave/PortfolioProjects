@@ -35,15 +35,14 @@ Subqueries are employed to compare data against aggregated values, such as findi
 ### Temporal Analysis
 The queries extract and manipulate temporal data, such as parsing year and month from date/time columns (published_time, last_update_date). They demonstrate the ability to analyze trends over time, such as the number of courses published and updated per year and month.
 
-### Grouping and Group-Level Analysis:
+### Grouping and Group-Level Analysis
 The queries utilize GROUP BY clauses to group data based on certain attributes, such as category, language, or publication year/month. They showcase the ability to perform group-level analysis, such as counting the number of courses in each category or language.
 
 ### Sorting and Ordering Results
 The queries utilize ORDER BY clauses to sort results based on specific columns. They demonstrate the ability to present data in a structured and organized manner.
 
 ### Union and Set Operations
-The queries use UNION to combine the results of multiple queries into a single result set, such as combining counts of courses with minimum and maximum prices.
-They showcase the ability to perform set operations to manipulate and combine data from different sources.
+The queries use UNION to combine the results of multiple queries into a single result set, such as combining counts of courses with minimum and maximum prices. They showcase the ability to perform set operations to manipulate and combine data from different sources.
 
 Overall, these queries showcase a range of SQL skills, including data retrieval, aggregation, filtering, conditional logic, subqueries, temporal analysis, grouping, sorting, and set operations, which are essential for conducting exploratory data analysis and deriving meaningful insights from relational databases.
 
