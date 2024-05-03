@@ -1,202 +1,103 @@
--- EXPLORATORY DATA ANALYSIS
+-- DATA PREPARATION
+
+-- Counting registers and exploring columns
+
+SELECT COUNT(*) AS Count_of_Rows
+FROM Course_info;
+
+SELECT TOP 5 *
+FROM Course_info;
 
 -- Retrieve column names and types
 
-select column_name, data_type
-from INFORMATION_SCHEMA.COLUMNS
+SELECT column_name, data_type
+FROM INFORMATION_SCHEMA.COLUMNS;
 
--- Calculate basic statistics for price column
+-- CHECKING FOR MISSING VALUES AND DELETING THOSE ROWS
 
---- Calculate min, max and avg price
+-- Count rows with any missing headline, instructor or update date information in specified columns
 
-select 
-    min(price) as min_price,
-    max(price) as max_price,
-    round(avg(price),2) as avg_price
-from Course_info
-where is_paid = 1 and content_length_min <> 0
+SELECT
+    COUNT(CASE WHEN headline IS NULL THEN 1 END) AS Missing_Headline,
+    COUNT(CASE WHEN instructor_name IS NULL THEN 1 END) AS Missing_Instructor_Name,
+    COUNT(CASE WHEN last_update_date IS NULL THEN 1 END) AS Missing_Last_UpdateDate
+FROM Course_info;
 
---- Breakdown of the number of courses in each payment status category (Paid or Free)
+-- Delete rows where any of these important fields are null
 
-select count(*) as num_courses, 
-    case when is_paid = 1 then 'Paid' else 'Free' end as payment_status
-from Course_info
-group by case when is_paid = 1 then 'Paid' else 'Free' end
+DELETE FROM Course_info
+WHERE headline IS NULL OR instructor_name IS NULL OR last_update_date IS NULL;
 
---- Explore which courses cost 1 (min), and count them
+-- CREATING CALCULATED FIELDS
 
-select id, title, course_url
-from Course_info
-where price = 1 and content_length_min <> 0
+-- Calculate engagement rate based on reviews:
+-- Add the number of reviews to the number of comments and then divide the sum by the number of subscribers
+-- (unless the number of subscribers is zero, in which case the result is NULL).
 
-select id, title, course_url
-from Course_info
-where price = 1 and content_length_min = 0
+ALTER TABLE Course_info
+ADD engagement_rate AS 
+    (CAST(num_reviews AS FLOAT) + CAST(num_comments AS FLOAT)) / NULLIF(num_subscribers, 0);
 
-select count(id)
-from Course_info
-where price = 1 and content_length_min <> 0
+-- EXPLORATORY ANALYSIS
 
---- Explore which courses cost 9999 (max), and count them
+-- Most popular courses
 
-select count(id)
-from Course_info
-where price = 9999 
+SELECT TOP 10 title, num_subscribers, category
+FROM Course_info
+ORDER BY num_subscribers DESC;
 
-select count(id) as quantity, '0 mins' as duration
-from Course_info
-where price = 9999 and content_length_min = 0
-UNION
-select count(id), 'longer than 0 mins'
-from Course_info
-where price = 9999 and content_length_min <> 0
+-- Most Engaged Courses
 
-select id, title, course_url
-from Course_info
-where price = 9999 and content_length_min <> 0
+SELECT TOP 10 title, ROUND(engagement_rate, 2) AS engagement_rate_rounded, category
+FROM Course_info
+ORDER BY engagement_rate DESC;
 
-select id, title, course_url
-from Course_info
-where price = 9999 and content_length_min = 0
+-- Category Popularity
 
--- Calculate basic statistics for num_subscribers column
+SELECT TOP 10 category, ROUND(AVG(num_subscribers), 2) AS avg_subscribers
+FROM Course_info
+GROUP BY category
+ORDER BY avg_subscribers DESC;
 
---- Calculate min, max and avg num_subscribers
+SELECT TOP 10 title, category, num_subscribers
+FROM Course_info
+WHERE category = 'Development'
+ORDER BY num_subscribers DESC;
 
-select 
-    min(num_subscribers) as min_subscribers,
-    max(num_subscribers) as max_subscribers,
-    round(avg(num_subscribers),0) as avg_subscribers
-from Course_info
+SELECT category, COUNT(*) AS num_courses
+FROM Course_info
+GROUP BY category
+ORDER BY num_courses DESC;
 
-select count(id)
-from Course_info
-where num_subscribers = 0
+-- Top Rated Courses
 
-select count(id)
-from Course_info
-where num_subscribers = 0 and content_length_min = 0
+SELECT TOP 10 title, avg_rating, num_subscribers, num_reviews
+FROM Course_info
+WHERE avg_rating > 4.5
+ORDER BY num_subscribers DESC;
 
---- Explore courses with min and max num_subscribers
+-- Courses with min and max num_subscribers
 
-select *
-from Course_info
-where num_subscribers =
-	(select max(num_subscribers)
-	from Course_info)
+SELECT *
+FROM Course_info
+WHERE num_subscribers = (SELECT MAX(num_subscribers) FROM Course_info);
 
-select *
-from Course_info
-where num_subscribers =
-	(select min(num_subscribers)
-	from Course_info
-	where num_subscribers <>0) 
+SELECT *
+FROM Course_info
+WHERE num_subscribers = (SELECT MIN(num_subscribers) FROM Course_info WHERE num_subscribers > 0);
 
-select language, count (*) as num_courses, sum(num_subscribers) as total_subscribers
-from Course_info
-group by language
-order by num_courses, total_subscribers
+-- Select top 5 free and paid courses by num_subscribers
 
-
--- Calculate basic statistics for content_length_min column
-
---- Calculate min, max and avg duration
-
-select 
-    min(content_length_min) as min_duration,
-    max(content_length_min) as max_duration,
-    round(avg(content_length_min),2) as avg_duration
-from Course_info
-
-select count(id)
-from Course_info
-where content_length_min = 0
-
--- Analyze trends over time for published/updated courses
-
---- Extract year and month from published_time
-
-select 
-    year(published_time) as pub_year,
-    month(published_time) as pub_month,
-    count(*) as num_courses_published
-from Course_info
-group by year(published_time), month(published_time)
-order by pub_year, pub_month
-
-select 
-    year(published_time) as pub_year,
-    count(*) as num_courses_published
-from Course_info
-group by year(published_time)
-order by pub_year
-
-select 
-    month(published_time) as pub_month,
-    count(*) as num_courses_published
-from Course_info
-group by month(published_time)
-order by pub_month
-
---- Extract year and month from 
-
-select 
-    year(last_update_date) as update_year,
-    month(last_update_date) as update_month,
-    count(*) as num_courses_updated
-from Course_info
-where last_update_date is not null
-group by year(last_update_date), month(last_update_date)
-order by update_year, update_month
-
-select count(*)
-from Course_info
-where last_update_date is null
-
-select 
-    year(last_update_date) as update_year,
-    count(*) as num_courses_updated
-from Course_info
-where last_update_date is not null
-group by year(last_update_date)
-order by update_year
-
-select 
-	month(last_update_date) as update_month,
-	count(*) as num_courses_updated
-from Course_info
-where last_update_date is not null
-group by month(last_update_date)
-order by update_month
-
--- Category, topic and language analysis
-
-select category, count(*) as num_courses
-from Course_info
-group by category
-order by num_courses
-
-select category, count(distinct subcategory) as num_subcategories
-from Course_info
-group by category
-order by num_subcategories
-
-select category, subcategory, count(*) as num_courses
-from Course_info
-group by category, subcategory
-order by category, num_courses, subcategory
-
-select language, count(*) as num_courses
-from Course_info
-group by language
-order by num_courses
-
-select topic, count(*) as num_courses
-from Course_info
-group by topic
-order by num_courses
-
-select language, count(*) as num_courses
-from Course_info 
-group by language
-having count(*) > 1000
+SELECT * FROM
+(
+    SELECT TOP 5 title, round(engagement_rate,2) as engagement_rate, num_subscribers, 'Free' AS Course_Type
+    FROM Course_info
+    WHERE is_paid = 0
+    
+    UNION ALL
+    
+    SELECT TOP 5 title, round(engagement_rate,2) as engagement_rate, num_subscribers, 'Paid' AS Course_Type
+    FROM Course_info
+    WHERE is_paid = 1
+) AS CombinedResults
+ORDER BY num_subscribers DESC;
