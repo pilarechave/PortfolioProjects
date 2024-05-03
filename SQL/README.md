@@ -1,49 +1,48 @@
-# Exploratory Analysis of Online Course Data
+# SQL ANALYSIS OF UDEMY DATA: INSIGHTS INTO POPULARITY AND ENGAGEMENT
 
-## Introduction
+## INTRODUCTION
 
-In today's digital age, online education has emerged as a cornerstone of learning, offering a diverse array of courses that cover a wide range of topics. This project embarks on an exploratory journey to unravel  underlying trends, pricing patterns, and educational insights embedded within the data.
+In this project, I analyze a dataset from the online learning platform Udemy that includes comprehensive details on over 200,000 courses. The focus is on identifying trends in course popularity and engagement, using advanced SQL queries to delve into aspects such as subscriber numbers and the relative popularity of free vs. paid courses.
 
-## Data
+## DATA
 
-The dataset obtained from [Kaggle](https://www.kaggle.com/datasets/hossaingh/udemy-courses?select=Course_info.csv) contains detailed information on all available Udemy courses on October 10, 2022, which was collected by web scraping the Udemy website.
+The dataset obtained from [Kaggle](https://www.kaggle.com/datasets/hossaingh/udemy-courses?select=Course_info.csv) contains detailed information on all available Udemy courses as of October 10, 2022. It includes various attributes for each course, such as title, subscription status (paid or free), subscriber numbers, instructor details, and more.
 
-### Characteristics of the dataset
-The dataset contains information about various attributes related to Udemy courses.
-- **Attributes**: The dataset includes attributes such as course titles, descriptions, pricing, ratings, number of subscribers, number of lectures, duration, category, subcategory, language, URLs, instructor names, and instructor URLs.
-- **Numeric and Textual Data**: The dataset comprises both numeric data, such as pricing, ratings, subscriber counts, and textual data, such as titles, descriptions, and instructor names.
-- **Categorical Information**: Categorical attributes like category, subcategory, and language provide additional insights into the nature and classification of the courses.
-- **Temporal Information**: Attributes like published time and last update date might offer temporal insights into the lifecycle of the courses.
-- **Instructor Details**: Information about instructors, including their names and URLs, allows for exploration of course offerings by specific instructors.
+## DATASET PREPARATION
 
-## SQL Skills
+The dataset was first examined for completeness and accuracy. Key preparatory steps included:
 
-Here's a description highlighting the SQL skills demonstrated in the provided queries:
+-**Initial Data Examination**: The structure and completeness of the dataset were assessed, including counting rows and checking data types.
+-**Missing Values**: Missing values in critical fields were identified and rows with incomplete data were removed to maintain analysis integrity.
+-**Calculated Fields**: Developed a new metric, engagement_rate, calculated as the sum of reviews and comments normalized by subscriber numbers, to quantitatively assess course engagement.
 
-### Data Retrieval Skills
-The queries demonstrate proficiency in retrieving data from a relational database using SELECT statements and the ability to access metadata about the database structure, such as column names and data types, using INFORMATION_SCHEMA views.
+## SQL ANALYSIS
 
-### Aggregation and Statistical Analysis
-The queries include aggregation functions (MIN, MAX, AVG, COUNT) to calculate basic statistics such as minimum, maximum, average, and counts. They showcase the ability to summarize and analyze numerical data, such as course prices and number of subscribers.
+Utilized advanced SQL queries to analyze the data, focusing on:
 
-### Filtering and Conditional Logic
-The queries utilize WHERE clauses to filter data based on specific conditions and they demonstrate the use of CASE statements for conditional logic, such as categorizing courses as paid or free based on the value of the 'is_paid' column.
+-**Exploratory Queries**: Basic queries to understand the distribution of data and identify top and bottom performers.
+-**Aggregation and Ranking**: Determined the most popular and engaged courses and assessed category popularity based on subscriber averages.
+-**Complex Queries**: Used subqueries for detailed comparisons and UNION to contrast free and paid courses, offering insights into different consumer behaviors.
 
-### Subqueries and Data Comparison
-Subqueries are employed to compare data against aggregated values, such as finding courses with the highest and lowest number of subscribers. They showcase the ability to nest queries within other queries to perform more complex analyses.
+## RESULTS
 
-### Temporal Analysis
-The queries extract and manipulate temporal data, such as parsing year and month from date/time columns (published_time, last_update_date). They demonstrate the ability to analyze trends over time, such as the number of courses published and updated per year and month.
+### Top Courses by Popularity and Engagement:
 
-### Grouping and Group-Level Analysis
-The queries utilize GROUP BY clauses to group data based on certain attributes, such as category, language, or publication year/month. They showcase the ability to perform group-level analysis, such as counting the number of courses in each category or language.
+I identified the courses with the highest subscriber counts and engagement rates from the dataset.
 
-### Sorting and Ordering Results
-The queries utilize ORDER BY clauses to sort results based on specific columns. They demonstrate the ability to present data in a structured and organized manner.
+### Category Insights:
 
-### Union and Set Operations
-The queries use UNION to combine the results of multiple queries into a single result set, such as combining counts of courses with minimum and maximum prices. They showcase the ability to perform set operations to manipulate and combine data from different sources.
+The analysis revealed that certain categories consistently attract more subscribers.
+'Development' is the most popular, with courses such as "Java Tutorial for Complete Beginners" and "2022 Complete Python Bootcamp From Zero to Hero in Python" leading in subscriber numbers.
 
-Overall, these queries showcase a range of SQL skills, including data retrieval, aggregation, filtering, conditional logic, subqueries, temporal analysis, grouping, sorting, and set operations, which are essential for conducting exploratory data analysis and deriving meaningful insights from relational databases.
+### Comparative Analysis
 
+The juxtaposition of free vs. paid courses provided critical insights into consumer behavior.
+Free courses generally show higher initial subscriber numbers, reflecting the lower barrier to entry and appeal to a broader audience. However, paid courses, while attracting fewer initial subscribers, tend to have comparable engagement rates, suggesting that users who commit financially are just as engaged, if not more so, likely reflecting a serious commitment to learning.
+
+For instance, paid courses like "Simple Strategy for Swing Trading the Stock Market" have achieved high engagement despite the entry cost, indicating that content quality and course reputation are significant factors for engagement.
+
+## CONCLUSION
+
+This SQL-based analysis provided deep insights into what drives learner engagement and popularity on Udemy. The findings can assist course creators and platform administrators in optimizing content and strategies to enhance educational outcomes and learner satisfaction.
 
